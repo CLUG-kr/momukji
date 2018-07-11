@@ -1,2 +1,2 @@
-# mo-muk-ji-cau
-2018년 CLUG 여름방학 SW 캠프
+# momukji
+2조 : 나종우, 주영석
