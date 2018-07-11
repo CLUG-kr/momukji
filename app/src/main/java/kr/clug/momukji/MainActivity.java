@@ -16,10 +16,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void onButton1Clicked(View v){
+    /* public void onButton1Clicked(View v){
         EditText edittext=(EditText)findViewById(R.id.editText123);
         Toast.makeText(getApplicationContext(), edittext.getText() + "을(를) 검색합니다.", Toast.LENGTH_SHORT).show();
         Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://m.search.naver.com/search.naver?query=" + edittext.getText()));
         startActivity(myIntent);
-    }
+    } */
 }
