@@ -1,27 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
     tools:context=".RestaurantInfo">
 
-    <EditText
-        android:id="@+id/titleText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="이름" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/infoText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="내용" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_weight="4"
+            android:scaleType="centerCrop"
+            app:srcCompat="@android:drawable/sym_def_app_icon" />
+
+        <TextView
+            android:id="@+id/restName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="이름"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/restType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_horizontal"
+            android:text="종류" />
+
+        <TextView
+            android:id="@+id/restDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="설명" />
+
+        <TextView
+            android:id="@+id/restAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="주소" />
+
+        <TextView
+            android:id="@+id/restNumber"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="0.4"
+            android:text="전화번호" />
+
+        <TextView
+            android:id="@+id/restOpenhours"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="영업시간" />
+
+        <TextView
+            android:id="@+id/restMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="메뉴" />
+
+        <LinearLayout
+            android:id="@+id/restRating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/restRatingNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="별점" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="@style/Base.Widget.AppCompat.RatingBar.Small"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:numStars="5"
+                android:paddingTop="4dp"
+                android:rating="3" />
+        </LinearLayout>
+
+        <fragment
+            class="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/map_6P"
+            android:layout_width="match_parent"
+            android:layout_height="240dp" />
+
+    </LinearLayout>
+</ScrollView>
