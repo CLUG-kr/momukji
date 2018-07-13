@@ -1,6 +1,8 @@
 package kr.clug.momukji;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +61,22 @@ public class restaurantListAdapter extends BaseAdapter{
         viewHolder.profileImage.setImageResource(restaurantItemArrayList.get(pos).getProfile());
         viewHolder.titleText.setText(restaurantItemArrayList.get(pos).getTitle());
         viewHolder.restaurantRating.setRating(restaurantItemArrayList.get(pos).getStarRating());
-        viewHolder.distanceText.setText(restaurantItemArrayList.get(pos).getDistance() + "m");
 
+        if (restaurantItemArrayList.get(pos).getMyLatitude() == -1 || restaurantItemArrayList.get(pos).getLatitude() == -1) {
+            viewHolder.distanceText.setText("정보 없음");
+        }
+        else {
+            Location location = new Location("start");
+            float[] result = new float[3];
+            location.distanceBetween(
+                    restaurantItemArrayList.get(pos).getMyLatitude(),
+                    restaurantItemArrayList.get(pos).getMyLongitude(),
+                    restaurantItemArrayList.get(pos).getLatitude(),
+                    restaurantItemArrayList.get(pos).getLongitude(),
+                    result
+            );
+            viewHolder.distanceText.setText(Integer.toString((int) result[0]) + "m");
+        }
         return convertView;
     }
 }

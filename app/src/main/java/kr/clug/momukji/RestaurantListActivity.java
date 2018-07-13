@@ -1,8 +1,17 @@
 package kr.clug.momukji;
 
+import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,14 +41,104 @@ public class RestaurantListActivity extends AppCompatActivity {
     restaurantListAdapter myListAdapter;
     ArrayList<restaurant_item> restaurantItemArrayList;
     Handler handler;
-
+    String restaurantType = "all";
+    double myLatitude = -1, myLongitude = -1;
+    LocationManager manager;
+    GPSListener gpsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_list);
-        NetworkTask networkTask = new NetworkTask("http://server7.dothome.co.kr/test.php", null);
+        NetworkTask networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + restaurantType, null);
         networkTask.execute();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        startLocationService();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        manager.removeUpdates(gpsListener);
+    }
+
+    private void startLocationService() {
+        gpsListener = new GPSListener();
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            try {
+                Location temp = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                myLatitude = temp.getLatitude();
+                myLongitude = temp.getLongitude();
+            }catch(Exception ex) {
+                myLatitude = -1;
+                myLongitude = -1;
+            }
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsListener);
+        }
+        else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            try {
+                Location temp = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                myLatitude = temp.getLatitude();
+                myLongitude = temp.getLongitude();
+            }catch(Exception ex) {
+                myLatitude = -1;
+                myLongitude = -1;
+            }
+            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, gpsListener);
+        }
+        else {
+            myLatitude = -1;
+            myLongitude = -1;
+            AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+            gsDialog.setMessage("이동 거리 및 시간을 표시하기 위해 GPS가 필요합니다. 위치 서비스 기능을 설정하시겠습니까?");
+            gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivity(intent);
+                }
+            }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    return;
+                }
+            }).create().show();
+        }
+
+    }
+
+    private class GPSListener implements LocationListener {
+        @Override
+        public void onLocationChanged(Location location) {
+            myLatitude = location.getLatitude();
+            myLongitude = location.getLongitude();
+            restaurant_item.setMyLatitude(myLatitude);
+            restaurant_item.setMyLongitude(myLongitude);
+            try {
+                myListAdapter.notifyDataSetChanged();
+            }catch (Exception ex) {
+                ;
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
     }
 
     public class NetworkTask extends AsyncTask<Void, Void, String> {
@@ -67,8 +167,9 @@ public class RestaurantListActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray(strjson);
                 for (int i = 0; i < jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    restaurantItemArrayList.add(new restaurant_item(jsonObject.getInt("uniqueid"), R.mipmap.ic_launcher,
-                            jsonObject.getString("title"),(float) jsonObject.getDouble("starRating"), jsonObject.getInt("distance")));
+                    restaurantItemArrayList.add(new restaurant_item(Integer.parseInt(jsonObject.getString("id")), R.mipmap.ic_launcher,
+                            jsonObject.getString("name"), Float.parseFloat(jsonObject.getString("star")),
+                            Double.parseDouble(jsonObject.getString("latitude")),Double.parseDouble(jsonObject.getString("longitude"))));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
