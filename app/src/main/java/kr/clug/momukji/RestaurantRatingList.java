@@ -57,7 +57,7 @@ public class RestaurantRatingList extends AppCompatActivity {
     public void onClick_Write(View v){
         AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
         gsDialog.setTitle("안내");
-        gsDialog.setMessage("리뷰를 한 번 등록하면 수정/삭제할 수 없습니다. 정말 등록하시겠습니까?");
+        gsDialog.setMessage("리뷰와 별점을 등록하면\n수정/삭제할 수 없습니다.\n정말 등록하시겠습니까?");
         gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 networkTask2 = new NetworkTask("http://server7.dothome.co.kr/review.php?mode=write&id=" + Integer.toString(uniqueid), "POST",
