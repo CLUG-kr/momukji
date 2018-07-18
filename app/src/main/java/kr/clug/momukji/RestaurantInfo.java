@@ -1,11 +1,17 @@
 package kr.clug.momukji;
 
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.app.FragmentManager;
+import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,11 +51,14 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
     private NetworkTask networkTask;
     private double serverLatitude, serverLongitude;
     FragmentManager fragmentManager;
+    ActionBar ab;
+    Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_info);
+        ab  = getSupportActionBar();
 
         Intent getData = getIntent();
         uniqueid = getData.getIntExtra("uniqueid",0);
@@ -65,6 +74,46 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         networkTask = new NetworkTask("http://server7.dothome.co.kr/info.php?id=" + Integer.toString(uniqueid), null);
         networkTask.execute();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbar_action, menu);
+        this.menu = menu;
+        TinyDB tinydb = new TinyDB(RestaurantInfo.this);
+        ArrayList<Integer> arrayList = tinydb.getListInt("favorite");
+        if (arrayList.contains(uniqueid)) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,getResources().getIdentifier("btn_star_big_on", "drawable", "android")));
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        TinyDB tinydb = new TinyDB(RestaurantInfo.this);
+
+        switch (item.getItemId()) {
+            case R.id.action_search :
+                //Toast.makeText(RestaurantInfo.this, "버튼을 눌렀습니다", Toast.LENGTH_LONG).show();
+                ArrayList<Integer> arrayList = tinydb.getListInt("favorite");
+                if (arrayList.contains(uniqueid)) {
+                    arrayList.remove((Integer)uniqueid);
+                    tinydb.putListInt("favorite", arrayList);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(this,getResources().getIdentifier("btn_star_big_off", "drawable", "android")));
+                    Toast.makeText(RestaurantInfo.this, "즐겨찾기에서 제거했습니다", Toast.LENGTH_SHORT).show();
+                } else {
+                    arrayList.add(uniqueid);
+                    tinydb.putListInt("favorite", arrayList);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(this,getResources().getIdentifier("btn_star_big_on", "drawable", "android")));
+                    Toast.makeText(RestaurantInfo.this, "즐겨찾기에 추가했습니다", Toast.LENGTH_SHORT).show();
+                }
+
+                return true;
+            default :
+                return super.onOptionsItemSelected(item) ;
+        }
+    }
+
+
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -114,6 +163,7 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
                 JSONArray jsonArray = new JSONArray(strjson);
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 ((TextView)findViewById(R.id.restName)).setText(jsonObject.getString("name"));
+                ab.setTitle(jsonObject.getString("name"));
                 ((TextView)findViewById(R.id.restAddress)).setText(jsonObject.getString("address"));
                 ((TextView)findViewById(R.id.restDescription)).setText(jsonObject.getString("description")+"\n"+jsonObject.getString("tag"));
                 ((TextView)findViewById(R.id.restNumber)).setText(jsonObject.getString("phone"));
@@ -122,7 +172,6 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
                 ((RatingBar)findViewById(R.id.ratingBar)).setRating(Float.parseFloat(jsonObject.getString("star")));
                 serverLatitude = Double.parseDouble(jsonObject.getString("latitude"));
                 serverLongitude = Double.parseDouble(jsonObject.getString("longitude"));
-
 
                 fragmentManager = getFragmentManager();
                 MapFragment mapFragment = (MapFragment)fragmentManager.findFragmentById(R.id.map_6P);
