@@ -57,13 +57,13 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         TextView x = (TextView)findViewById(R.id.restName);
         x.setText(String.valueOf(uniqueid));
 
-        networkTask = new NetworkTask("http://server7.dothome.co.kr/info.php?id=" + Integer.toString(uniqueid), null);
-        networkTask.execute();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        networkTask = new NetworkTask("http://server7.dothome.co.kr/info.php?id=" + Integer.toString(uniqueid), null);
+        networkTask.execute();
     }
 
     @Override
@@ -81,6 +81,7 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
 
     public void onClick_Review(View v){
         Intent review = new Intent(getApplicationContext(), RestaurantRatingList.class);
+        review.putExtra("uniqueid", uniqueid);
         startActivity(review);
     }
 
