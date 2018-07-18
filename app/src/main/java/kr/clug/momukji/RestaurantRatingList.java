@@ -1,10 +1,14 @@
 package kr.clug.momukji;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -29,7 +34,7 @@ import java.util.ArrayList;
 public class RestaurantRatingList extends AppCompatActivity {
 
     private int uniqueid;
-    private NetworkTask networkTask;
+    private NetworkTask networkTask, networkTask2;
     ArrayList<RestaurantRatingListItem> restaurantRatingListItems;
 
     @Override
@@ -44,22 +49,43 @@ public class RestaurantRatingList extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        networkTask = new NetworkTask("http://server7.dothome.co.kr/review.php?id=" + Integer.toString(uniqueid), null);
+        networkTask = new NetworkTask("http://server7.dothome.co.kr/review.php?id=" + Integer.toString(uniqueid), "GET", null);
         networkTask.execute();
+    }
+
+
+    public void onClick_Write(View v){
+        AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+        gsDialog.setTitle("안내");
+        gsDialog.setMessage("리뷰를 한 번 등록하면 수정/삭제할 수 없습니다. 정말 등록하시겠습니까?");
+        gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                networkTask2 = new NetworkTask("http://server7.dothome.co.kr/review.php?mode=write&id=" + Integer.toString(uniqueid), "POST",
+                        "context=" + ((EditText)findViewById(R.id.reviewWrite)).getText().toString() +
+                                "&star=" + Float.toString(((RatingBar)findViewById(R.id.restRatingApply)).getRating()));
+                networkTask2.execute();
+            }
+        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        }).create().show();
     }
 
     public class NetworkTask extends AsyncTask<Void, Void, String> {
         private String url;
-        private ContentValues values;
+        private String method;
+        private String data;
 
-        public NetworkTask(String url, ContentValues values) {
+        public NetworkTask(String url, String method, String data) {
             this.url = url;
-            this.values = values;
+            this.method = method;
+            this.data = data;
         }
 
         @Override
         protected String doInBackground(Void... params) {
-            String result = request(url);
+            String result = request(url, method, data);
             return result;
         }
 
@@ -70,6 +96,14 @@ public class RestaurantRatingList extends AppCompatActivity {
             if (s == null) {
                 Toast.makeText(getApplicationContext(), "인터넷에 연결되지 않습니다.", Toast.LENGTH_SHORT).show();
                 finish();
+                return;
+            }
+
+            if (data != null) {
+                Toast.makeText(RestaurantRatingList.this,"리뷰를 등록했습니다.",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(RestaurantRatingList.this, RestaurantRatingList.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
                 return;
             }
 
@@ -94,7 +128,7 @@ public class RestaurantRatingList extends AppCompatActivity {
         }
     }
 
-    private String request(String urlStr){
+    private String request(String urlStr, String method, String data){
         StringBuilder output = new StringBuilder();
         HttpURLConnection conn = null;
 
@@ -112,10 +146,20 @@ public class RestaurantRatingList extends AppCompatActivity {
         if (conn != null) {
             conn.setConnectTimeout(10000);
             try {
-                conn.setRequestMethod("GET");
+                conn.setRequestMethod(method);
                 conn.setDoInput(true);
-                conn.setDoOutput(true);
                 try {
+                    if (data != null) {
+                        try {
+                            conn.setDoOutput(true);
+                            OutputStream os = conn.getOutputStream();
+                            os.write(data.getBytes("UTF-8"));
+                            os.flush();
+                            os.close();
+                        } catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
                     InputStream is = conn.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     String line = null;
