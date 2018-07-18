@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 
 public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -31,6 +33,8 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment)fragmentManager.findFragmentById(R.id.map_6P);
         mapFragment.getMapAsync(this);
+
+
     }
 
 
@@ -47,4 +51,10 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         marker.position(new LatLng(37.503148, 126.957)).title("6층 팀플실");
         map.addMarker(marker).showInfoWindow();
     }
+
+    public void onClick_Review(View v){
+        Intent review = new Intent(getApplicationContext(), RestaurantRatingList.class);
+        startActivity(review);
+    }
+
 }
