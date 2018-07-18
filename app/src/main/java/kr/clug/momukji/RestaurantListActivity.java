@@ -1,6 +1,7 @@
 package kr.clug.momukji;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +36,8 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RestaurantListActivity extends AppCompatActivity {
     ListView myList;
@@ -45,57 +48,86 @@ public class RestaurantListActivity extends AppCompatActivity {
     double myLatitude = -1, myLongitude = -1;
     LocationManager manager;
     GPSListener gpsListener;
+    Timer timerGPSLocation = null;
+    LoadingTask task = null;
+    ProgressDialog asyncDialog = null;
+    NetworkTask networkTask = null;
+    static public boolean errorGPS = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        asyncDialog = new ProgressDialog(RestaurantListActivity.this);
         setContentView(R.layout.activity_restaurant_list);
-        NetworkTask networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + restaurantType, null);
-        networkTask.execute();
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        startLocationService();
+        networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + restaurantType, null);
+        networkTask.execute();
+
+        if (startLocationService() == 1) {
+            if (errorGPS){
+                Toast.makeText(getApplicationContext(), "일시적으로 GPS와 연결되지 않습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            task = new LoadingTask();
+            timerGPSLocation = new Timer();
+            timerGPSLocation.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (myLatitude == -1) {
+                        try {
+                            manager.removeUpdates(gpsListener);
+                            try { task.cancel(true); } catch (Exception ex) { ex.printStackTrace(); }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        try {
+                            asyncDialog.dismiss();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        RestaurantListActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "일시적으로 GPS와 연결되지 않습니다.", Toast.LENGTH_SHORT).show();
+                                errorGPS = true;
+                            }
+                        });
+                    }
+                }
+
+            }, (long) (3000));
+            task.execute();
+        }
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        manager.removeUpdates(gpsListener);
+        try { timerGPSLocation.cancel(); } catch(Exception ex) { ex.printStackTrace(); }
+        try { task.cancel(true); } catch(Exception ex) { ex.printStackTrace(); }
+        try { networkTask.cancel(true); } catch(Exception ex) { ex.printStackTrace(); }
+        try { asyncDialog.dismiss();} catch(Exception ex) { ex.printStackTrace(); }
+        try { manager.removeUpdates(gpsListener); } catch(Exception ex) { ex.printStackTrace(); }
     }
 
-    private void startLocationService() {
+    int loResult = 1;
+    private int startLocationService() {
+        loResult = 1;
         gpsListener = new GPSListener();
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            try {
-                Location temp = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                myLatitude = temp.getLatitude();
-                myLongitude = temp.getLongitude();
-            }catch(Exception ex) {
-                myLatitude = -1;
-                myLongitude = -1;
-            }
-            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, gpsListener);
-        }
-        else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            try {
-                Location temp = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                myLatitude = temp.getLatitude();
-                myLongitude = temp.getLongitude();
-            }catch(Exception ex) {
-                myLatitude = -1;
-                myLongitude = -1;
-            }
-            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, gpsListener);
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpsListener);
         }
         else {
             myLatitude = -1;
             myLongitude = -1;
             AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
-            gsDialog.setMessage("이동 거리 및 시간을 표시하기 위해 GPS가 필요합니다. 위치 서비스 기능을 설정하시겠습니까?");
+            loResult = 0;
+            gsDialog.setMessage("원활한 사용을 위해 GPS가 필요합니다. 위치 서비스 기능을 설정하시겠습니까?");
             gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -108,7 +140,37 @@ public class RestaurantListActivity extends AppCompatActivity {
                 }
             }).create().show();
         }
+        return loResult;
+    }
 
+    private class LoadingTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setCancelable(false);
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("로딩 중입니다..");
+            asyncDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                while (!this.isCancelled()) {
+                    Thread.sleep(500);
+                }
+            } catch (InterruptedException e) {
+                asyncDialog.dismiss();
+                e.printStackTrace();
+            }
+            asyncDialog.dismiss();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+        }
     }
 
     private class GPSListener implements LocationListener {
@@ -121,8 +183,12 @@ public class RestaurantListActivity extends AppCompatActivity {
             try {
                 myListAdapter.notifyDataSetChanged();
             }catch (Exception ex) {
-                ;
+                ;ex.printStackTrace();
             }
+            try { timerGPSLocation.cancel(); } catch(Exception ex) { ex.printStackTrace(); }
+            try { task.cancel(true); } catch(Exception ex) { ex.printStackTrace(); }
+            try { asyncDialog.dismiss();} catch(Exception ex) { ex.printStackTrace(); }
+            try { manager.removeUpdates(this); } catch(Exception ex) { ex.printStackTrace(); }
         }
 
         @Override
@@ -146,7 +212,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         private ContentValues values;
 
         public NetworkTask(String url, ContentValues values) {
-
             this.url = url;
             this.values = values;
         }
@@ -161,8 +226,13 @@ public class RestaurantListActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             String strjson = s;
-            restaurantItemArrayList = new ArrayList<restaurant_item>();
+            if (s == null) {
+                Toast.makeText(getApplicationContext(), "인터넷에 연결되지 않습니다.", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
 
+            restaurantItemArrayList = new ArrayList<restaurant_item>();
             try {
                 JSONArray jsonArray = new JSONArray(strjson);
                 for (int i = 0; i < jsonArray.length(); i++){
@@ -201,8 +271,10 @@ public class RestaurantListActivity extends AppCompatActivity {
             conn = (HttpURLConnection)url.openConnection();
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         if (conn != null) {
