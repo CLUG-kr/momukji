@@ -15,6 +15,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAiz-QZDDCpveDrXn6aCx19O8tSumoBxeU" />
+
         <activity
             android:name=".SplashActivity"
             android:label="SplashActivity"
@@ -28,7 +29,9 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".testAct" />
         <activity android:name=".RestaurantListActivity" />
-        <activity android:name=".RestaurantInfo"></activity>
+        <activity android:name=".RestaurantInfo" />
+        <activity android:name=".RestaurantRatingListItem" />
+        <activity android:name=".RestaurantRatingList"></activity>
     </application>
 
 </manifest>

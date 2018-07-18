@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:paddingTop="5dp"
+    tools:context=".RestaurantRatingListItem">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <RatingBar
+            android:id="@+id/restaurantRating"
+            style="@style/Base.Widget.AppCompat.RatingBar.Small"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:rating="3.5" />
+
+        <TextView
+            android:id="@+id/restRatingDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:text="평가날짜"
+            android:textColor="#000000"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/restRatingText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="평가평가"
+        android:textColor="#000000"
+        android:textSize="18sp" />
+</LinearLayout>
