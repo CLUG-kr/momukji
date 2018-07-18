@@ -30,7 +30,6 @@
         <activity android:name=".testAct" />
         <activity android:name=".RestaurantListActivity" />
         <activity android:name=".RestaurantInfo" />
-        <activity android:name=".RestaurantRatingListItem" />
         <activity android:name=".RestaurantRatingList"></activity>
     </application>
 
