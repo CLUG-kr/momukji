@@ -13,7 +13,6 @@ public class RestaurantRatingList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_rating_list);
-        Toast.makeText(getApplicationContext(),"asdf",Toast.LENGTH_LONG).show();
         ListView listview;
         RestaurantListViewAdapter adapter;
         ArrayList<RestaurantRatingListItem> restaurantRatingListItems = new ArrayList<RestaurantRatingListItem>();
