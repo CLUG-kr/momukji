@@ -21,4 +21,10 @@ public class testAct extends AppCompatActivity {
         x.putExtra("type","first");
         startActivity(x);
     }
+
+    public void onClick_Favorite(View v) {
+        Intent x = new Intent(getApplicationContext(), RestaurantListActivity.class);
+        x.putExtra("type","favorite");
+        startActivity(x);
+    }
 }
