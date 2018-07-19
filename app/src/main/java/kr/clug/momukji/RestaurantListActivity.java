@@ -44,6 +44,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RestaurantListActivity extends AppCompatActivity {
+    // RestaurantListActivity : 식당 리스트뷰 출력 엑티비티
+    // HttpURLConnection 으로 php 서버와 접속하여 식당 정보를 json 형태로 받아옴
+    // 인텐트로 들어온 값이 식당 타입
+    // all = 전체, favorite = 즐겨찾기, recommend = 추천
+    // glide 오픈소스 사용 (이미지를 URL로 서버에서 받아옴)
+
     ListView myList;
     restaurantListAdapter myListAdapter;
     ArrayList<restaurant_item> restaurantItemArrayList;

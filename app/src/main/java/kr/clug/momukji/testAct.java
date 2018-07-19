@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 public class testAct extends AppCompatActivity {
+    // 앱 메인화면. 4개의 메뉴 선택, 상단 배너
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

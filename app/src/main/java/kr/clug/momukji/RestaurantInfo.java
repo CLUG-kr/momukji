@@ -48,6 +48,10 @@ import java.util.ArrayList;
 
 
 public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallback {
+    // 식당 별 정보 출력 엑티비티
+    // HttpURLConnection 으로 php 서버와 접속하여 식당 정보를 json 형태로 받아옴
+    // glide 오픈소스 사용 (이미지를 URL로 서버에서 받아옴)
+
     private int uniqueid;
     private GoogleMap mMap;
     private NetworkTask networkTask;

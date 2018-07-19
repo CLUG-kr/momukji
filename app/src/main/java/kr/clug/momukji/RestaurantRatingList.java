@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class RestaurantRatingList extends AppCompatActivity {
+    // 식당별 리뷰 리스트 출력 엑티비티
+    // HttpURLConnection 으로 php 서버와 접속하여 json 형태로 받아옴
 
     private int uniqueid;
     private NetworkTask networkTask, networkTask2;
