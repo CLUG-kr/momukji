@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:adjustViewBounds="true"
+                    android:onClick="onRecommend"
                     android:padding="20dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/recommend" />

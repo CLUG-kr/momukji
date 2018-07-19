@@ -203,6 +203,10 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
                 else
                     ((TextView)findViewById(R.id.restMenu)).setText("정보 없음");
 
+                TinyDB tinyDB = new TinyDB(RestaurantInfo.this);
+                int tempCnt = tinyDB.getInt(jsonObject.getString("type")) + 1;
+                tinyDB.putInt(jsonObject.getString("type"),tempCnt);
+
                 ((RatingBar)findViewById(R.id.ratingBar)).setRating(Float.parseFloat(jsonObject.getString("star")));
                 ((TextView)findViewById(R.id.ratingTextView)).setText("("+jsonObject.getString("star")+"점)");
 
