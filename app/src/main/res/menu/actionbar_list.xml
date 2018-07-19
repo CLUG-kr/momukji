@@ -16,6 +16,10 @@
         android:title="일식"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_select_yang"
+        android:title="양식"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_select_bun"
         android:title="분식"
         app:showAsAction="never" />

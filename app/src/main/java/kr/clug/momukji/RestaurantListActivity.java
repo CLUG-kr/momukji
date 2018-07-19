@@ -61,6 +61,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     ActionBar ab;
     Menu menu;
     String selType = null;
+    private String listType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         asyncDialog = new ProgressDialog(RestaurantListActivity.this);
         setContentView(R.layout.activity_restaurant_list);
         ab  = getSupportActionBar();
+
     }
 
     @Override
@@ -109,6 +111,9 @@ public class RestaurantListActivity extends AppCompatActivity {
             case R.id.action_select_zok:
                 selType="zok";
                 break;
+            case R.id.action_select_yang:
+                selType="yang";
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -137,6 +142,9 @@ public class RestaurantListActivity extends AppCompatActivity {
             case "china":
                 ab.setTitle("중식");
                 break;
+            case "yang":
+                ab.setTitle("양식");
+                break;
             case "snack":
                 ab.setTitle("분식");
                 break;
@@ -158,9 +166,29 @@ public class RestaurantListActivity extends AppCompatActivity {
             case "all": case "first":
                 ab.setTitle("전체 보기");
                 break;
+            case "recommend":
+                ab.setTitle("추천");
+                break;
         }
 
-        if (!selType.equals("first")) networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + selType, null);
+        if (selType.equals("recommend")) {
+            TinyDB tinyDB = new TinyDB(RestaurantListActivity.this);
+            int korea = tinyDB.getInt("korea");
+            int japan = tinyDB.getInt("japan");
+            int china = tinyDB.getInt("china");
+            int yang = tinyDB.getInt("yang");
+            int chicken = tinyDB.getInt("chicken");
+            int pizza = tinyDB.getInt("pizza");
+            int zok = tinyDB.getInt("zok");
+            int dessert = tinyDB.getInt("dessert");
+            int fastfood = tinyDB.getInt("fastfood");
+            int snack = tinyDB.getInt("snack");
+            networkTask = new NetworkTask("http://server7.dothome.co.kr/recommend.php?korea=" + Integer.toString(korea) +
+                    "&japan=" + Integer.toString(japan) + "&china=" + Integer.toString(china) + "&yang=" + Integer.toString(yang) +
+                    "&chicken=" + Integer.toString(chicken) + "&pizza=" + Integer.toString(pizza) + "&zok=" + Integer.toString(zok) +
+                    "&dessert=" + Integer.toString(dessert) + "&fastfood=" + Integer.toString(fastfood) + "&snack=" + Integer.toString(snack) , null);
+        }
+        else if (!selType.equals("first")) networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + selType, null);
         else networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=all", null);
        // Toast.makeText(RestaurantListActivity.this,selType,Toast.LENGTH_SHORT).show();
         networkTask.execute();
@@ -335,13 +363,14 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             restaurantItemArrayList = new ArrayList<restaurant_item>();
             try {
-                JSONArray jsonArray = new JSONArray(strjson);
-                for (int i = 0; i < jsonArray.length(); i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    restaurantItemArrayList.add(new restaurant_item(Integer.parseInt(jsonObject.getString("id")), jsonObject.getString("icon"),
-                            jsonObject.getString("name"), Float.parseFloat(jsonObject.getString("star")),
-                            Double.parseDouble(jsonObject.getString("latitude")),Double.parseDouble(jsonObject.getString("longitude"))));
-                }
+                    JSONArray jsonArray = new JSONArray(strjson);
+                    for (int i = 0; i < jsonArray.length(); i++){
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        restaurantItemArrayList.add(new restaurant_item(Integer.parseInt(jsonObject.getString("id")), jsonObject.getString("icon"),
+                                jsonObject.getString("name"), Float.parseFloat(jsonObject.getString("star")),
+                                Double.parseDouble(jsonObject.getString("latitude")),Double.parseDouble(jsonObject.getString("longitude"))));
+                    }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
