@@ -167,7 +167,10 @@ public class RestaurantListActivity extends AppCompatActivity {
                 ab.setTitle("전체 보기");
                 break;
             case "recommend":
-                ab.setTitle("추천");
+                ab.setTitle("스마트 추천");
+                break;
+            case "favorite":
+                ab.setTitle("즐겨찾기");
                 break;
         }
 
@@ -188,10 +191,30 @@ public class RestaurantListActivity extends AppCompatActivity {
                     "&chicken=" + Integer.toString(chicken) + "&pizza=" + Integer.toString(pizza) + "&zok=" + Integer.toString(zok) +
                     "&dessert=" + Integer.toString(dessert) + "&fastfood=" + Integer.toString(fastfood) + "&snack=" + Integer.toString(snack) , null);
         }
+        else if (selType.equals("favorite")){
+            String x = "(";
+            TinyDB tinyDB = new TinyDB(RestaurantListActivity.this);
+            ArrayList<Integer> arrayList = tinyDB.getListInt("favorite");
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (i != 0){
+                    x += "," + arrayList.get(i).toString();
+                }
+                else {
+                    x += arrayList.get(i).toString();
+                }
+            }
+            x += ")";
+            networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?mode=favorite&type=all&data=" + x, null);
+        }
         else if (!selType.equals("first")) networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + selType, null);
         else networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=all", null);
        // Toast.makeText(RestaurantListActivity.this,selType,Toast.LENGTH_SHORT).show();
         networkTask.execute();
+
+        if (selType.equals("recommend") || selType.equals("favorite")) {
+            ab.hide();
+        }
+        else ab.show();
 
         if (selType.equals("first") && startLocationService() == 1) {
             if (errorGPS) {

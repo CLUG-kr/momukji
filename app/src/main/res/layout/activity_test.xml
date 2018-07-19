@@ -17,8 +17,8 @@
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
         android:layout_weight="1"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/bono" />
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/banner" />
 
     <TableLayout
         android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="AI 추천"
+                    android:text="스마트 추천"
                     android:textColor="@android:color/black"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -156,7 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="마이페이지"
+                    android:text="즐겨찾기"
                     android:textColor="@android:color/black"
                     android:textSize="22sp"
                     android:textStyle="bold" />
