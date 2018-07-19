@@ -125,6 +125,10 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         MarkerOptions marker = new MarkerOptions();
         marker.position(new LatLng(serverLatitude, serverLongitude)).title(((TextView)findViewById(R.id.restName)).getText().toString());
         map.addMarker(marker).showInfoWindow();
+
+        LatLng pos= new LatLng(serverLatitude, serverLongitude);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 17);
+        map.animateCamera(cameraUpdate);
     }
 
     public void onClick_Review(View v){
