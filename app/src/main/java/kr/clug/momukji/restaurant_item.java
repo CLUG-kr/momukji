@@ -1,7 +1,7 @@
 package kr.clug.momukji;
 
 public class restaurant_item {
-    private int profile;
+    private String profile;
     private String title;
     private float starRating;
     private double latitude;
@@ -10,7 +10,7 @@ public class restaurant_item {
     static private double myLongitude = -1;
     private int uniqueId;
 
-    public restaurant_item(int uniqueid, int profile, String title, float starRating, double latitude, double longitude) {
+    public restaurant_item(int uniqueid, String profile, String title, float starRating, double latitude, double longitude) {
         this.uniqueId = uniqueid;
         this.profile = profile;
         this.title = title;
@@ -19,11 +19,11 @@ public class restaurant_item {
         this.longitude = longitude;
     }
 
-    public int getProfile() {
+    public String getProfile() {
         return profile;
     }
 
-    public void setProfile(int profile) {
+    public void setProfile(String profile) {
         this.profile = profile;
     }
 

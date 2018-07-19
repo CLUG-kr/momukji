@@ -12,10 +12,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -53,22 +57,116 @@ public class RestaurantListActivity extends AppCompatActivity {
     ProgressDialog asyncDialog = null;
     NetworkTask networkTask = null;
     static public boolean errorGPS = false;
+    static public boolean alertOnce = false;
+    ActionBar ab;
+    Menu menu;
+    String selType = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         asyncDialog = new ProgressDialog(RestaurantListActivity.this);
         setContentView(R.layout.activity_restaurant_list);
+        ab  = getSupportActionBar();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbar_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_select_all :
+                selType="all";
+                break;
+            case R.id.action_select_bun:
+                selType="snack";
+                break;
+            case R.id.action_select_chicken:
+                selType="chicken";
+                break;
+            case R.id.action_select_china:
+                selType="china";
+                break;
+            case R.id.action_select_dessert:
+                selType="dessert";
+                break;
+            case R.id.action_select_fastfood:
+                selType="fastfood";
+                break;
+            case R.id.action_select_japan:
+                selType="japan";
+                break;
+            case R.id.action_select_korea:
+                selType="korea";
+                break;
+            case R.id.action_select_pizza:
+                selType="pizza";
+                break;
+            case R.id.action_select_zok:
+                selType="zok";
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        Intent intent = new Intent(RestaurantListActivity.this,RestaurantListActivity.class);
+        intent.putExtra("type",selType);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0,0);
+        return true;
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + restaurantType, null);
+        Intent getData = getIntent();
+        selType = getData.getStringExtra("type");
+
+        switch (selType) {
+            case "korea":
+                ab.setTitle("한식");
+                break;
+            case "japan":
+                ab.setTitle("일식");
+                break;
+            case "china":
+                ab.setTitle("중식");
+                break;
+            case "snack":
+                ab.setTitle("분식");
+                break;
+            case "zok":
+                ab.setTitle("족발, 보쌈");
+                break;
+            case "chicken":
+                ab.setTitle("치킨");
+                break;
+            case "pizza":
+                ab.setTitle("피자");
+                break;
+            case "dessert":
+                ab.setTitle("카페, 디저트");
+                break;
+            case "fastfood":
+                ab.setTitle("패스트푸드");
+                break;
+            case "all": case "first":
+                ab.setTitle("전체 보기");
+                break;
+        }
+
+        if (!selType.equals("first")) networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=" + selType, null);
+        else networkTask = new NetworkTask("http://server7.dothome.co.kr/list.php?type=all", null);
+       // Toast.makeText(RestaurantListActivity.this,selType,Toast.LENGTH_SHORT).show();
         networkTask.execute();
 
-        if (startLocationService() == 1) {
-            if (errorGPS){
+        if (selType.equals("first") && startLocationService() == 1) {
+            if (errorGPS) {
                 Toast.makeText(getApplicationContext(), "일시적으로 GPS와 연결되지 않습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -127,6 +225,9 @@ public class RestaurantListActivity extends AppCompatActivity {
             myLongitude = -1;
             AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
             loResult = 0;
+            if (alertOnce) return loResult;
+            else alertOnce = true;
+
             gsDialog.setMessage("원활한 사용을 위해 GPS가 필요합니다. 위치 서비스 기능을 설정하시겠습니까?");
             gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -237,7 +338,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray(strjson);
                 for (int i = 0; i < jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    restaurantItemArrayList.add(new restaurant_item(Integer.parseInt(jsonObject.getString("id")), R.mipmap.ic_launcher,
+                    restaurantItemArrayList.add(new restaurant_item(Integer.parseInt(jsonObject.getString("id")), jsonObject.getString("icon"),
                             jsonObject.getString("name"), Float.parseFloat(jsonObject.getString("star")),
                             Double.parseDouble(jsonObject.getString("latitude")),Double.parseDouble(jsonObject.getString("longitude"))));
                 }
@@ -252,7 +353,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             myList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                    Toast.makeText(getApplicationContext(), restaurantItemArrayList.get(pos).getTitle() + "를 선택했습니다.",Toast.LENGTH_LONG).show();
+                 //   Toast.makeText(getApplicationContext(), restaurantItemArrayList.get(pos).getTitle() + "를 선택했습니다.",Toast.LENGTH_LONG).show();
                     Intent newActivity = new Intent(getApplicationContext(), RestaurantInfo.class);
                     newActivity.putExtra("uniqueid",restaurantItemArrayList.get(pos).getUniqueId());
                     startActivity(newActivity);

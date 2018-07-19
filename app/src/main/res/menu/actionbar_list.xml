@@ -1,0 +1,42 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_select_all"
+        android:title="전체 보기"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_korea"
+        android:title="한식"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_china"
+        android:title="중식"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_japan"
+        android:title="일식"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_bun"
+        android:title="분식"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_chicken"
+        android:title="치킨"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_pizza"
+        android:title="피자"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_zok"
+        android:title="족발, 보쌈"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_dessert"
+        android:title="카페, 디저트"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_fastfood"
+        android:title="패스트푸드"
+        app:showAsAction="never" />
+</menu>

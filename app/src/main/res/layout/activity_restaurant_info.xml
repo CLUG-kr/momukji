@@ -1,42 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kr.clug.momukji.CustomScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:orientation="vertical"
     tools:context=".RestaurantInfo">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/restImage"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_weight="4"
+            android:layout_height="100dp"
             android:scaleType="centerCrop"
-            app:srcCompat="@android:drawable/sym_def_app_icon" />
+            android:src="@drawable/noimage" />
 
         <TextView
             android:id="@+id/restName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:text="이름"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/restType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center_horizontal"
-            android:text="종류" />
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/restDescription"
@@ -46,15 +38,24 @@
             android:gravity="center"
             android:text="설명" />
 
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="0.75dp"
+            android:background="#c3c3c3"
+            android:src="@android:color/transparent" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:paddingLeft="10dp"
                 android:paddingRight="10dp">
 
                 <TextView
@@ -62,34 +63,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="주소" />
+                    android:text="주소"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/bunho"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="전화번호" />
+                    android:text="전화번호"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/sigan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="영업시간" />
+                    android:text="영업시간"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/menu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="메뉴" />
+                    android:text="메뉴"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingRight="10dp">
 
                 <TextView
                     android:id="@+id/restAddress"
@@ -127,25 +133,36 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="5dp">
 
             <TextView
                 android:id="@+id/restRatingNum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="0"
-                android:text="별점        " />
+                android:text="별점       "
+                android:textStyle="bold" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
                 style="@style/Base.Widget.AppCompat.RatingBar.Small"
-                android:secondaryProgressTint="#00000000"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
                 android:rating="3.2"
+                android:secondaryProgressTint="#00000000"
                 android:stepSize="0.01" />
+
+            <TextView
+                android:id="@+id/ratingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:text="(3.1점)" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -159,6 +176,7 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
                     android:onClick="onClick_Review"
                     android:text="리뷰" />
             </LinearLayout>
@@ -167,10 +185,10 @@
 
 
         <fragment
-            class="com.google.android.gms.maps.MapFragment"
             android:id="@+id/map_6P"
+            class="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="240dp" />
+            android:layout_height="match_parent" />
 
         <!-- <include
             layout="@layout/activity_restaurant_rating_list"
@@ -179,4 +197,4 @@
             android:id="@+id/review" /> -->
 
     </LinearLayout>
-</kr.clug.momukji.CustomScrollView>
+</LinearLayout>

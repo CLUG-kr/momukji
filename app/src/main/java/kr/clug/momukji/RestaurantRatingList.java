@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,6 +44,8 @@ public class RestaurantRatingList extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant_rating_list);
         Intent getData = getIntent();
         uniqueid = getData.getIntExtra("uniqueid",0);
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle("리뷰");
     }
 
 
@@ -56,6 +59,27 @@ public class RestaurantRatingList extends AppCompatActivity {
 
     public void onClick_Write(View v){
         AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+        if (((RatingBar)findViewById(R.id.restRatingApply)).getRating() < 0.5) {
+            gsDialog.setTitle("안내");
+            gsDialog.setMessage("별점을 0.5개 이상 부여해주세요.");
+            gsDialog.setPositiveButton("확인", null).create().show();
+            return;
+        }
+
+        int t = ((EditText)findViewById(R.id.reviewWrite)).getText().toString().length();
+        if (t > 150) {
+            gsDialog.setTitle("안내");
+            gsDialog.setMessage("리뷰는 150자까지 작성할 수 있습니다.");
+            gsDialog.setPositiveButton("확인", null).create().show();
+            return;
+        }
+        else if (t == 0) {
+            gsDialog.setTitle("안내");
+            gsDialog.setMessage("리뷰 내용을 작성해주세요.");
+            gsDialog.setPositiveButton("확인", null).create().show();
+            return;
+        }
+
         gsDialog.setTitle("안내");
         gsDialog.setMessage("리뷰와 별점을 등록하면\n수정/삭제할 수 없습니다.\n정말 등록하시겠습니까?");
         gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {

@@ -22,6 +22,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -59,18 +61,15 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_info);
         ab  = getSupportActionBar();
-
-        Intent getData = getIntent();
-        uniqueid = getData.getIntExtra("uniqueid",0);
-
-        TextView x = (TextView)findViewById(R.id.restName);
-        x.setText(String.valueOf(uniqueid));
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Intent getData = getIntent();
+        uniqueid = getData.getIntExtra("uniqueid",0);
+        TextView x = (TextView)findViewById(R.id.restName);
+        x.setText(String.valueOf(uniqueid));
         networkTask = new NetworkTask("http://server7.dothome.co.kr/info.php?id=" + Integer.toString(uniqueid), null);
         networkTask.execute();
     }
@@ -99,12 +98,12 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
                     arrayList.remove((Integer)uniqueid);
                     tinydb.putListInt("favorite", arrayList);
                     menu.getItem(0).setIcon(ContextCompat.getDrawable(this,getResources().getIdentifier("btn_star_big_off", "drawable", "android")));
-                    Toast.makeText(RestaurantInfo.this, "즐겨찾기에서 제거했습니다", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(RestaurantInfo.this, "즐겨찾기에서 제거했습니다", Toast.LENGTH_SHORT).show();
                 } else {
                     arrayList.add(uniqueid);
                     tinydb.putListInt("favorite", arrayList);
                     menu.getItem(0).setIcon(ContextCompat.getDrawable(this,getResources().getIdentifier("btn_star_big_on", "drawable", "android")));
-                    Toast.makeText(RestaurantInfo.this, "즐겨찾기에 추가했습니다", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(RestaurantInfo.this, "즐겨찾기에 추가했습니다", Toast.LENGTH_SHORT).show();
                 }
 
                 return true;
@@ -164,12 +163,45 @@ public class RestaurantInfo extends AppCompatActivity implements OnMapReadyCallb
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 ((TextView)findViewById(R.id.restName)).setText(jsonObject.getString("name"));
                 ab.setTitle(jsonObject.getString("name"));
-                ((TextView)findViewById(R.id.restAddress)).setText(jsonObject.getString("address"));
-                ((TextView)findViewById(R.id.restDescription)).setText(jsonObject.getString("description")+"\n"+jsonObject.getString("tag"));
-                ((TextView)findViewById(R.id.restNumber)).setText(jsonObject.getString("phone"));
-                ((TextView)findViewById(R.id.restOpenhours)).setText(jsonObject.getString("time"));
-                ((TextView)findViewById(R.id.restMenu)).setText(jsonObject.getString("menu"));
+
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.placeholder(R.drawable.noimage);
+                requestOptions.error(R.drawable.noimage);
+                Glide.with(RestaurantInfo.this).setDefaultRequestOptions(requestOptions)
+                            .load(jsonObject.getString("image")).into((ImageView)findViewById(R.id.restImage));
+
+                if (!jsonObject.getString("address").equals("null"))
+                    ((TextView)findViewById(R.id.restAddress)).setText(jsonObject.getString("address"));
+                else
+                    ((TextView)findViewById(R.id.restAddress)).setText("정보 없음");
+
+                if (!jsonObject.getString("description").equals("null") && !jsonObject.getString("tag").equals("null"))
+                    ((TextView)findViewById(R.id.restDescription)).setText(jsonObject.getString("description")+" ("+jsonObject.getString("tag")+")");
+                else if (!jsonObject.getString("description").equals("null"))
+                    ((TextView)findViewById(R.id.restDescription)).setText(jsonObject.getString("description"));
+                else if (!jsonObject.getString("tag").equals("null"))
+                    ((TextView)findViewById(R.id.restDescription)).setText(jsonObject.getString("tag"));
+                else
+                    ((TextView)findViewById(R.id.restDescription)).setText("정보 없음");
+
+                if (!jsonObject.getString("phone").equals("null"))
+                    ((TextView)findViewById(R.id.restNumber)).setText(jsonObject.getString("phone"));
+                else
+                    ((TextView)findViewById(R.id.restNumber)).setText("정보 없음");
+
+                if (!jsonObject.getString("time").equals("null"))
+                    ((TextView)findViewById(R.id.restOpenhours)).setText(jsonObject.getString("time"));
+                else
+                    ((TextView)findViewById(R.id.restOpenhours)).setText("정보 없음");
+
+                if (!jsonObject.getString(("menu")).equals("null"))
+                    ((TextView)findViewById(R.id.restMenu)).setText(jsonObject.getString("menu"));
+                else
+                    ((TextView)findViewById(R.id.restMenu)).setText("정보 없음");
+
                 ((RatingBar)findViewById(R.id.ratingBar)).setRating(Float.parseFloat(jsonObject.getString("star")));
+                ((TextView)findViewById(R.id.ratingTextView)).setText("("+jsonObject.getString("star")+"점)");
+
                 serverLatitude = Double.parseDouble(jsonObject.getString("latitude"));
                 serverLongitude = Double.parseDouble(jsonObject.getString("longitude"));
 

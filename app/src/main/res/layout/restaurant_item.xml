@@ -19,7 +19,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
@@ -29,7 +29,8 @@
             android:layout_gravity="center"
             android:layout_margin="2dp"
             android:paddingLeft="2dp"
-            app:srcCompat="@android:drawable/sym_def_app_icon" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/food" />
 
         <TextView
             android:id="@+id/titleText"
@@ -47,12 +48,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
+            android:gravity="right|center"
             android:orientation="vertical"
             android:paddingRight="2dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="bottom|right"
@@ -74,7 +75,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="top|right"
@@ -84,12 +85,14 @@
                     android:id="@+id/distanceText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginTop="5dp"
-                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="right|center"
                     android:text="1300m"
                     android:textColor="@android:color/black"
                     android:textSize="13sp" />
+
             </LinearLayout>
 
         </LinearLayout>

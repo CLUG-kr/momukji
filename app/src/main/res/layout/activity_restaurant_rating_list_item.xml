@@ -6,8 +6,6 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
     android:paddingTop="5dp"
     tools:context=".RestaurantRatingListItem">
 
@@ -16,7 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
 
         <RatingBar
             android:id="@+id/restaurantRating"
@@ -43,6 +43,7 @@
         android:id="@+id/restRatingText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
         android:text="평가평가"
         android:textColor="#000000"
         android:textSize="18sp" />

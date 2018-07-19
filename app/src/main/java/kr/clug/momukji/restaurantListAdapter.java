@@ -10,6 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 
 public class restaurantListAdapter extends BaseAdapter{
@@ -58,7 +62,12 @@ public class restaurantListAdapter extends BaseAdapter{
             viewHolder = (ViewHolder)convertView.getTag();
         }
 
-        viewHolder.profileImage.setImageResource(restaurantItemArrayList.get(pos).getProfile());
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.food);
+        requestOptions.error(R.drawable.food);
+        Glide.with(context).setDefaultRequestOptions(requestOptions)
+                .load(restaurantItemArrayList.get(pos).getProfile()).into(viewHolder.profileImage);
+
         viewHolder.titleText.setText(restaurantItemArrayList.get(pos).getTitle());
         viewHolder.restaurantRating.setRating(restaurantItemArrayList.get(pos).getStarRating());
 
